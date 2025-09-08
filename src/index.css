@@ -22,11 +22,11 @@ Modern SaaS-inspired palette with professional blues and clean grays.
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    /* Primary Brand Colors - Professional Blue */
-    --primary: 217 91% 60%;
+    /* Primary Brand Colors - Vibrant Purple */
+    --primary: 280 100% 70%;
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 217 91% 55%;
-    --primary-glow: 217 91% 70%;
+    --primary-hover: 280 100% 65%;
+    --primary-glow: 280 100% 80%;
 
     /* Secondary Colors - Soft Gray */
     --secondary: 220 14% 96%;
@@ -37,10 +37,10 @@ Modern SaaS-inspired palette with professional blues and clean grays.
     --muted: 220 14% 96%;
     --muted-foreground: 220 9% 46%;
 
-    /* Accent Colors - Professional Indigo */
-    --accent: 224 76% 48%;
+    /* Accent Colors - Bright Coral */
+    --accent: 16 100% 66%;
     --accent-foreground: 0 0% 100%;
-    --accent-hover: 224 76% 43%;
+    --accent-hover: 16 100% 60%;
 
     /* Status Colors */
     --destructive: 0 84% 60%;
@@ -56,8 +56,8 @@ Modern SaaS-inspired palette with professional blues and clean grays.
     --ring: 217 91% 60%;
 
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(217, 91%, 60%), hsl(224, 76%, 48%));
-    --gradient-hero: linear-gradient(135deg, hsl(217, 91%, 60%) 0%, hsl(224, 76%, 48%) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(280, 100%, 70%), hsl(16, 100%, 66%));
+    --gradient-hero: linear-gradient(135deg, hsl(280, 100%, 70%) 0%, hsl(16, 100%, 66%) 100%);
     --gradient-card: linear-gradient(145deg, hsl(0, 0%, 100%) 0%, hsl(220, 14%, 98%) 100%);
 
     /* Shadows */
@@ -65,7 +65,7 @@ Modern SaaS-inspired palette with professional blues and clean grays.
     --shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.1), 0 2px 4px -2px hsl(0 0% 0% / 0.1);
     --shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.1), 0 4px 6px -4px hsl(0 0% 0% / 0.1);
     --shadow-xl: 0 20px 25px -5px hsl(0 0% 0% / 0.1), 0 8px 10px -6px hsl(0 0% 0% / 0.1);
-    --shadow-glow: 0 0 0 1px hsl(217 91% 60% / 0.1), 0 10px 30px -10px hsl(217 91% 60% / 0.3);
+    --shadow-glow: 0 0 0 1px hsl(280 100% 70% / 0.1), 0 10px 30px -10px hsl(280 100% 70% / 0.3);
 
     /* Border Radius */
     --radius: 0.75rem;
@@ -84,7 +84,7 @@ Modern SaaS-inspired palette with professional blues and clean grays.
 
     --sidebar-border: 220 13% 91%;
 
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-ring: 280 100% 70%;
   }
 
   .dark {
@@ -102,10 +102,10 @@ Modern SaaS-inspired palette with professional blues and clean grays.
     --popover-foreground: 210 40% 98%;
 
     /* Primary Brand Colors */
-    --primary: 217 91% 60%;
+    --primary: 280 100% 70%;
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 217 91% 65%;
-    --primary-glow: 217 91% 70%;
+    --primary-hover: 280 100% 75%;
+    --primary-glow: 280 100% 80%;
 
     /* Secondary Colors */
     --secondary: 217.2 32.6% 17.5%;
@@ -117,9 +117,9 @@ Modern SaaS-inspired palette with professional blues and clean grays.
     --muted-foreground: 215 20.2% 65.1%;
 
     /* Accent Colors */
-    --accent: 224 76% 48%;
-    --accent-foreground: 210 40% 98%;
-    --accent-hover: 224 76% 53%;
+    --accent: 16 100% 66%;
+    --accent-foreground: 0 0% 100%;
+    --accent-hover: 16 100% 70%;
 
     /* Status Colors */
     --destructive: 0 62.8% 30.6%;
@@ -132,11 +132,11 @@ Modern SaaS-inspired palette with professional blues and clean grays.
     /* Border & Input */
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 217 91% 60%;
+    --ring: 280 100% 70%;
 
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(217, 91%, 60%), hsl(224, 76%, 48%));
-    --gradient-hero: linear-gradient(135deg, hsl(217, 91%, 60%) 0%, hsl(224, 76%, 48%) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(280, 100%, 70%), hsl(16, 100%, 66%));
+    --gradient-hero: linear-gradient(135deg, hsl(280, 100%, 70%) 0%, hsl(16, 100%, 66%) 100%);
     --gradient-card: linear-gradient(145deg, hsl(224, 71%, 4%) 0%, hsl(217.2, 32.6%, 17.5%) 100%);
 
     /* Shadows */
@@ -144,7 +144,7 @@ Modern SaaS-inspired palette with professional blues and clean grays.
     --shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.4), 0 2px 4px -2px hsl(0 0% 0% / 0.4);
     --shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.5), 0 4px 6px -4px hsl(0 0% 0% / 0.5);
     --shadow-xl: 0 20px 25px -5px hsl(0 0% 0% / 0.6), 0 8px 10px -6px hsl(0 0% 0% / 0.6);
-    --shadow-glow: 0 0 0 1px hsl(217 91% 60% / 0.2), 0 10px 30px -10px hsl(217 91% 60% / 0.4);
+    --shadow-glow: 0 0 0 1px hsl(280 100% 70% / 0.2), 0 10px 30px -10px hsl(280 100% 70% / 0.4);
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -152,7 +152,7 @@ Modern SaaS-inspired palette with professional blues and clean grays.
     --sidebar-accent: 240 3.7% 15.9%;
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-ring: 280 100% 70%;
   }
 }
 
