@@ -1,536 +1,383 @@
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardHeader, 
-  CardTitle 
-} from '@/components/ui/card';
+import { ArrowLeft, Download, Building2, TrendingUp, Users, Target, DollarSign, BarChart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { 
-  ArrowLeft, 
-  Download, 
-  TrendingUp, 
-  Users, 
-  Target, 
-  Shield, 
-  DollarSign, 
-  CheckCircle,
-  AlertTriangle,
-  Info,
-  Lightbulb,
-  BarChart3,
-  Star,
-  Zap,
-  PieChart
-} from 'lucide-react';
-import { useFeasibilityStore } from '@/store/feasibilityStore';
 import { ThemeToggle } from '@/components/ThemeToggle';
-import { useToast } from '@/hooks/use-toast';
+import { useFeasibilityStore } from '@/store/feasibilityStore';
+import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 
 const ResultsPage = () => {
+  const { analysisResult, startupData, reset } = useFeasibilityStore();
   const navigate = useNavigate();
-  const { toast } = useToast();
-  const { startupData, analysisResult } = useFeasibilityStore();
 
   useEffect(() => {
-    if (!startupData || !analysisResult) {
+    if (!analysisResult || !startupData) {
       navigate('/');
     }
-  }, [startupData, analysisResult, navigate]);
+  }, [analysisResult, startupData, navigate]);
 
-  if (!startupData || !analysisResult) {
+  if (!analysisResult || !startupData) {
     return null;
   }
 
-  const downloadResults = () => {
-    const data = {
-      startup: startupData,
-      analysis: analysisResult,
-      generatedAt: new Date().toISOString(),
-    };
-    
-    const blob = new Blob([JSON.stringify(data, null, 2)], { 
-      type: 'application/json' 
-    });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${startupData.title.replace(/\s+/g, '_')}_feasibility_analysis.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    
-    toast({
-      title: "Results Downloaded",
-      description: "Your feasibility analysis has been saved as a JSON file.",
-    });
+  const handleBack = () => {
+    reset();
+    navigate('/');
   };
 
-  const getRiskColor = (level: string) => {
-    switch (level) {
-      case 'Low': return 'text-success bg-success/10 border-success/20';
-      case 'Medium': return 'text-warning bg-warning/10 border-warning/20';
-      case 'High': return 'text-destructive bg-destructive/10 border-destructive/20';
-      default: return 'text-muted-foreground bg-muted/10 border-muted/20';
-    }
+  const handleDownload = () => {
+    const dataStr = JSON.stringify(analysisResult, null, 2);
+    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+    const exportFileDefaultName = 'feasibility-analysis.json';
+    const linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', exportFileDefaultName);
+    linkElement.click();
   };
 
-  const getScoreColor = (score: number) => {
-    if (score >= 80) return 'text-success bg-success/10';
-    if (score >= 60) return 'text-warning bg-warning/10';
-    return 'text-destructive bg-destructive/10';
+  // Extract data from the new structure
+  const companiesData = analysisResult.results[0];
+  const financialsData = analysisResult.results[1];
+  const marketData = analysisResult.results[2];
+  const swotData = analysisResult.results[3];
+  const verdictData = analysisResult.results[4];
+
+  const getFeasibilityColor = (score: number) => {
+    if (score >= 0.8) return 'text-emerald-600 dark:text-emerald-400';
+    if (score >= 0.6) return 'text-amber-600 dark:text-amber-400';
+    return 'text-red-600 dark:text-red-400';
   };
+
+  const getScorePercentage = (score: number) => Math.round(score * 100);
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-lg border-b">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => navigate('/')}
-                className="flex items-center gap-2 hover:bg-primary/10"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                Back to Input
-              </Button>
-              <Separator orientation="vertical" className="h-6" />
-              <div className="flex items-center gap-2">
-                <div className="p-2 gradient-primary rounded-lg">
-                  <TrendingUp className="h-5 w-5 text-white" />
-                </div>
-                <span className="font-semibold">Feasibility Analysis</span>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={downloadResults}
-                className="flex items-center gap-2 hover:bg-primary/10"
-              >
-                <Download className="h-4 w-4" />
-                Download JSON
-              </Button>
-              <ThemeToggle />
-            </div>
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
+      <div className="container mx-auto px-4 py-8 max-w-6xl">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8"
+        >
+          <div>
+            <h1 className="text-3xl font-bold text-foreground mb-2">
+              Startup Feasibility Analysis
+            </h1>
+            <p className="text-muted-foreground">
+              Analysis for: <span className="font-medium text-foreground">{startupData.title}</span>
+            </p>
           </div>
-        </div>
-      </header>
+          <div className="flex gap-3">
+            <ThemeToggle />
+            <Button onClick={handleDownload} variant="secondary" size="sm">
+              <Download className="w-4 h-4 mr-2" />
+              Download JSON
+            </Button>
+            <Button onClick={handleBack} variant="outline" size="sm">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back
+            </Button>
+          </div>
+        </motion.div>
 
-      <div className="container mx-auto px-4 py-8 max-w-7xl">
-        {/* Startup Info */}
+        {/* Overall Score Card */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          transition={{ delay: 0.1 }}
           className="mb-8"
         >
-          <Card className="border-0 gradient-card shadow-lg">
-            <CardHeader>
-              <div className="flex items-start gap-4">
-                <div className="p-3 gradient-primary rounded-2xl shadow-glow">
-                  <Lightbulb className="h-8 w-8 text-white" />
-                </div>
-                <div className="flex-1">
-                  <CardTitle className="text-3xl mb-3 text-gradient">{startupData.title}</CardTitle>
-                  <CardDescription className="text-lg leading-relaxed">
-                    {startupData.description}
-                  </CardDescription>
-                </div>
-              </div>
+          <Card className="border-2 border-primary/20 shadow-lg">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-xl flex items-center gap-2">
+                <BarChart className="w-5 h-5 text-primary" />
+                Overall Feasibility Score
+              </CardTitle>
             </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-between mb-4">
+                <div className={`text-4xl font-bold ${getFeasibilityColor(verdictData.overallScore)}`}>
+                  {getScorePercentage(verdictData.overallScore)}%
+                </div>
+                <Badge variant="secondary" className="text-base px-3 py-1">
+                  {verdictData.overallScore >= 0.8 ? 'High Feasibility' : 
+                   verdictData.overallScore >= 0.6 ? 'Moderate Feasibility' : 'Low Feasibility'}
+                </Badge>
+              </div>
+              <p className="text-muted-foreground mb-4">{verdictData.explanation.overallScore}</p>
+              
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {Object.entries(verdictData.feasibilityScores).map(([key, score]) => (
+                  <div key={key} className="text-center">
+                    <div className={`text-2xl font-bold ${getFeasibilityColor(score)}`}>
+                      {getScorePercentage(score)}%
+                    </div>
+                    <div className="text-sm text-muted-foreground capitalize">
+                      {key.replace(/_/g, ' ')}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
           </Card>
         </motion.div>
 
-        {/* Overall Verdict - Hero Section */}
+        {/* Market Analysis */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
+          transition={{ delay: 0.2 }}
           className="mb-8"
         >
-          <Card className="shadow-xl border gradient-primary/20 bg-gradient-to-r from-primary/5 to-accent/5">
-            <CardHeader className="text-center pb-4">
-              <div className="flex items-center justify-center gap-4 mb-4">
-                <div className="p-4 bg-white/10 backdrop-blur-sm rounded-full">
-                  <CheckCircle className="h-10 w-10 text-primary" />
-                </div>
-                <CardTitle className="text-3xl font-bold">Overall Verdict</CardTitle>
+          <Card className="shadow-md hover:shadow-lg transition-all duration-300">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-xl">
+                <TrendingUp className="w-5 h-5 text-primary" />
+                Market Analysis
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div>
+                <h4 className="font-semibold text-lg mb-2 text-primary">Market Size</h4>
+                <p className="text-muted-foreground">{marketData.marketSize}</p>
               </div>
               
-              <div className="flex items-center justify-center gap-6 mb-6">
-                <Badge className={`text-2xl px-6 py-3 font-bold ${getScoreColor(analysisResult.verdict.feasibilityScore)}`}>
-                  {analysisResult.verdict.feasibilityScore}/100
-                </Badge>
-                <Badge 
-                  variant="outline"
-                  className={`text-lg px-4 py-2 ${getRiskColor(analysisResult.verdict.riskLevel)} border-2`}
-                >
-                  {analysisResult.verdict.riskLevel} Risk
-                </Badge>
+              <div>
+                <h4 className="font-semibold text-lg mb-3 text-primary">Target Audience</h4>
+                <p className="text-muted-foreground">{marketData.targetAudience}</p>
               </div>
 
-              <div className="max-w-2xl mx-auto mb-6">
-                <div className="h-4 bg-muted/30 rounded-full overflow-hidden">
-                  <div 
-                    className={`h-full transition-all duration-2000 ease-out ${
-                      analysisResult.verdict.feasibilityScore >= 80 ? 'bg-success' :
-                      analysisResult.verdict.feasibilityScore >= 60 ? 'bg-warning' : 'bg-destructive'
-                    }`}
-                    style={{ width: `${analysisResult.verdict.feasibilityScore}%` }}
-                  />
-                </div>
-              </div>
-            </CardHeader>
-            
-            <CardContent className="space-y-6">
-              <div className="bg-white/20 backdrop-blur-sm p-6 rounded-xl border border-white/10">
-                <p className="text-lg leading-relaxed text-center font-medium">{analysisResult.verdict.recommendation}</p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/10">
-                  <h4 className="font-semibold mb-4 flex items-center gap-2 text-lg">
-                    <Info className="h-5 w-5 text-primary" />
-                    Next Steps
-                  </h4>
-                  <ul className="space-y-3">
-                    {analysisResult.verdict.nextSteps.map((step, index) => (
-                      <li key={index} className="flex items-start gap-3">
-                        <div className="w-8 h-8 rounded-full gradient-primary flex items-center justify-center flex-shrink-0">
-                          <span className="text-sm font-bold text-white">{index + 1}</span>
-                        </div>
-                        <span className="text-sm leading-relaxed">{step}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/10">
-                  <h4 className="font-semibold mb-4 flex items-center gap-2 text-lg">
-                    <Star className="h-5 w-5 text-accent" />
-                    Timeline
-                  </h4>
-                  <p className="text-lg font-medium text-primary">{analysisResult.verdict.timeline}</p>
+              <div>
+                <h4 className="font-semibold text-lg mb-3 text-primary">Market Trends</h4>
+                <div className="grid gap-3">
+                  {marketData.trends.map((trend, index) => (
+                    <div key={index} className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
+                      <div className="w-2 h-2 rounded-full bg-primary mt-2 flex-shrink-0" />
+                      <p className="text-sm">{trend}</p>
+                    </div>
+                  ))}
                 </div>
               </div>
             </CardContent>
           </Card>
         </motion.div>
 
-        {/* Analysis Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          {/* Market Analysis */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            <Card className="shadow-lg h-full border-2 border-accent/20 hover:border-accent/40 transition-colors">
-              <CardHeader className="pb-4">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="p-3 bg-accent/10 rounded-xl">
-                    <Target className="h-6 w-6 text-accent" />
-                  </div>
-                  <CardTitle className="text-2xl">Market Analysis</CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="bg-accent/5 p-4 rounded-lg border border-accent/10">
-                  <h4 className="font-semibold mb-3 text-accent flex items-center gap-2">
-                    <BarChart3 className="h-4 w-4" />
-                    Market Size
-                  </h4>
-                  <p className="text-sm leading-relaxed">{analysisResult.marketAnalysis.marketSize}</p>
-                </div>
-                
-                <div className="bg-primary/5 p-4 rounded-lg border border-primary/10">
-                  <h4 className="font-semibold mb-3 text-primary flex items-center gap-2">
-                    <Users className="h-4 w-4" />
-                    Target Market
-                  </h4>
-                  <p className="text-sm leading-relaxed">{analysisResult.marketAnalysis.targetMarket}</p>
-                </div>
+        {/* Competitors */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="mb-8"
+        >
+          <Card className="shadow-md hover:shadow-lg transition-all duration-300">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-xl">
+                <Building2 className="w-5 h-5 text-primary" />
+                Competitor Analysis
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                {companiesData.companies.map((competitor, index) => (
+                  <div key={index} className="border rounded-lg p-4 bg-muted/30">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="font-semibold text-lg text-primary">{competitor.name}</h4>
+                    </div>
+                    
+                    <div className="grid md:grid-cols-2 gap-4 mb-4">
+                      <div>
+                        <h5 className="font-medium mb-2 text-emerald-600 dark:text-emerald-400">Features</h5>
+                        <ul className="space-y-1">
+                          {competitor.features.map((feature, i) => (
+                            <li key={i} className="text-sm text-muted-foreground flex items-start gap-2">
+                              <div className="w-1 h-1 rounded-full bg-current mt-2 flex-shrink-0" />
+                              {feature}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      
+                      <div>
+                        <h5 className="font-medium mb-2 text-amber-600 dark:text-amber-400">Pricing</h5>
+                        <ul className="space-y-1">
+                          {competitor.pricing.map((price, i) => (
+                            <li key={i} className="text-sm text-muted-foreground flex items-start gap-2">
+                              <div className="w-1 h-1 rounded-full bg-current mt-2 flex-shrink-0" />
+                              {price}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
 
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div>
+                        <h5 className="font-medium mb-2 text-emerald-600 dark:text-emerald-400">Strengths</h5>
+                        <ul className="space-y-1">
+                          {competitor.swot.strengths.map((strength, i) => (
+                            <li key={i} className="text-sm text-muted-foreground flex items-start gap-2">
+                              <div className="w-1 h-1 rounded-full bg-current mt-2 flex-shrink-0" />
+                              {strength}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      
+                      <div>
+                        <h5 className="font-medium mb-2 text-red-600 dark:text-red-400">Weaknesses</h5>
+                        <ul className="space-y-1">
+                          {competitor.swot.weaknesses.map((weakness, i) => (
+                            <li key={i} className="text-sm text-muted-foreground flex items-start gap-2">
+                              <div className="w-1 h-1 rounded-full bg-current mt-2 flex-shrink-0" />
+                              {weakness}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* SWOT Analysis (Merits & Demerits) */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="mb-8"
+        >
+          <Card className="shadow-md hover:shadow-lg transition-all duration-300">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-xl">
+                <Target className="w-5 h-5 text-primary" />
+                Strengths & Challenges
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid md:grid-cols-2 gap-6">
                 <div>
-                  <h4 className="font-semibold mb-3 flex items-center gap-2">
-                    <TrendingUp className="h-4 w-4 text-primary" />
-                    Market Trends
+                  <h4 className="font-semibold text-lg mb-4 text-emerald-600 dark:text-emerald-400">
+                    Merits
                   </h4>
-                  <div className="space-y-2">
-                    {analysisResult.marketAnalysis.marketTrends.map((trend, index) => (
-                      <div key={index} className="flex items-start gap-3 p-3 bg-muted/30 rounded-lg">
-                        <div className="w-2 h-2 rounded-full bg-accent mt-2 flex-shrink-0" />
-                        <span className="text-sm leading-relaxed">{trend}</span>
+                  <div className="space-y-4">
+                    {swotData.merits.map((merit, index) => (
+                      <div key={index} className="p-4 rounded-lg bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800">
+                        <h5 className="font-medium text-emerald-700 dark:text-emerald-300 mb-2">
+                          {merit.merit}
+                        </h5>
+                        <p className="text-sm text-emerald-600 dark:text-emerald-400">
+                          {merit.description}
+                        </p>
                       </div>
                     ))}
                   </div>
                 </div>
-
-                <div className="grid grid-cols-1 gap-4">
-                  <div className="bg-success/10 p-4 rounded-lg border border-success/20">
-                    <h4 className="font-semibold mb-3 text-success flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4" />
-                      Opportunities
-                    </h4>
-                    <ul className="space-y-2">
-                      {analysisResult.marketAnalysis.opportunities.map((opp, index) => (
-                        <li key={index} className="text-sm leading-relaxed flex items-start gap-2">
-                          <Zap className="w-3 h-3 text-success mt-1 flex-shrink-0" />
-                          {opp}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div className="bg-warning/10 p-4 rounded-lg border border-warning/20">
-                    <h4 className="font-semibold mb-3 text-warning flex items-center gap-2">
-                      <AlertTriangle className="h-4 w-4" />
-                      Risks
-                    </h4>
-                    <ul className="space-y-2">
-                      {analysisResult.marketAnalysis.risks.map((risk, index) => (
-                        <li key={index} className="text-sm leading-relaxed flex items-start gap-2">
-                          <AlertTriangle className="w-3 h-3 text-warning mt-1 flex-shrink-0" />
-                          {risk}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          {/* Competitors */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-          >
-            <Card className="shadow-lg h-full border-2 border-primary/20 hover:border-primary/40 transition-colors">
-              <CardHeader className="pb-4">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="p-3 bg-primary/10 rounded-xl">
-                    <Users className="h-6 w-6 text-primary" />
-                  </div>
-                  <CardTitle className="text-2xl">Competitive Landscape</CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-4">
-                  {analysisResult.competitors.directCompetitors.map((competitor, index) => (
-                    <div key={index} className="border-2 border-muted/30 rounded-xl p-5 hover:border-primary/30 transition-colors bg-gradient-to-r from-primary/5 to-accent/5">
-                      <h4 className="font-bold text-lg mb-3 text-primary">{competitor.name}</h4>
-                      <p className="text-sm mb-4 leading-relaxed text-muted-foreground">{competitor.description}</p>
-                      <div className="grid grid-cols-1 gap-3">
-                        <div className="bg-success/10 p-3 rounded-lg border border-success/20">
-                          <span className="text-sm font-semibold text-success flex items-center gap-2 mb-2">
-                            <CheckCircle className="h-3 w-3" />
-                            Strengths
-                          </span>
-                          <div className="flex flex-wrap gap-1">
-                            {competitor.strengths.map((strength, i) => (
-                              <Badge key={i} variant="secondary" className="text-xs bg-success/20 text-success">
-                                {strength}
-                              </Badge>
-                            ))}
-                          </div>
-                        </div>
-                        <div className="bg-warning/10 p-3 rounded-lg border border-warning/20">
-                          <span className="text-sm font-semibold text-warning flex items-center gap-2 mb-2">
-                            <AlertTriangle className="h-3 w-3" />
-                            Weaknesses
-                          </span>
-                          <div className="flex flex-wrap gap-1">
-                            {competitor.weaknesses.map((weakness, i) => (
-                              <Badge key={i} variant="secondary" className="text-xs bg-warning/20 text-warning">
-                                {weakness}
-                              </Badge>
-                            ))}
-                          </div>
+                
+                <div>
+                  <h4 className="font-semibold text-lg mb-4 text-red-600 dark:text-red-400">
+                    Challenges
+                  </h4>
+                  <div className="space-y-4">
+                    {swotData.demerits.map((demerit, index) => (
+                      <div key={index} className="p-4 rounded-lg bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800">
+                        <h5 className="font-medium text-red-700 dark:text-red-300 mb-2">
+                          {demerit.demerit}
+                        </h5>
+                        <p className="text-sm text-red-600 dark:text-red-400 mb-2">
+                          {demerit.description}
+                        </p>
+                        <div className="mt-2 p-2 rounded bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800">
+                          <p className="text-xs text-amber-700 dark:text-amber-300 font-medium">
+                            Counter-measure: {demerit.counter_measure}
+                          </p>
                         </div>
                       </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Financial Projections */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="mb-8"
+        >
+          <Card className="shadow-md hover:shadow-lg transition-all duration-300">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-xl">
+                <DollarSign className="w-5 h-5 text-primary" />
+                Financial Analysis
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div>
+                <h4 className="font-semibold text-lg mb-3 text-primary">Revenue Model</h4>
+                <div className="grid gap-4">
+                  <div className="p-3 rounded-lg bg-muted/50">
+                    <h5 className="font-medium mb-1">Freemium</h5>
+                    <p className="text-sm text-muted-foreground">{financialsData.revenue_model.freemium}</p>
+                  </div>
+                  <div className="p-3 rounded-lg bg-muted/50">
+                    <h5 className="font-medium mb-1">Subscription</h5>
+                    <p className="text-sm text-muted-foreground">{financialsData.revenue_model.subscription}</p>
+                  </div>
+                  <div className="p-3 rounded-lg bg-muted/50">
+                    <h5 className="font-medium mb-1">Partnerships</h5>
+                    <p className="text-sm text-muted-foreground">{financialsData.revenue_model.partnerships}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h4 className="font-semibold text-lg mb-3 text-primary">Cost Structure</h4>
+                <div className="grid md:grid-cols-2 gap-4">
+                  {Object.entries(financialsData.cost_structure).map(([key, value]) => (
+                    <div key={key} className="p-3 rounded-lg bg-muted/50">
+                      <h5 className="font-medium mb-1 capitalize">{key.replace(/_/g, ' ')}</h5>
+                      <p className="text-sm text-muted-foreground">{value}</p>
                     </div>
                   ))}
                 </div>
+              </div>
 
-                <div className="bg-primary/5 p-5 rounded-xl border border-primary/20">
-                  <h4 className="font-semibold mb-4 text-primary flex items-center gap-2 text-lg">
-                    <Star className="h-5 w-5" />
-                    Your Competitive Advantages
-                  </h4>
-                  <ul className="space-y-3">
-                    {analysisResult.competitors.competitiveAdvantage.map((advantage, index) => (
-                      <li key={index} className="flex items-start gap-3">
-                        <CheckCircle className="w-5 h-5 text-success mt-0.5 flex-shrink-0" />
-                        <span className="text-sm leading-relaxed font-medium">{advantage}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        </div>
-
-        {/* Bottom Row - SWOT and Financial */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* SWOT Analysis */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-          >
-            <Card className="shadow-lg h-full border-2 border-accent/20 hover:border-accent/40 transition-colors">
-              <CardHeader className="pb-4">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="p-3 bg-accent/10 rounded-xl">
-                    <Shield className="h-6 w-6 text-accent" />
+              <div>
+                <h4 className="font-semibold text-lg mb-3 text-primary">Funding Requirements</h4>
+                <div className="grid gap-4">
+                  <div className="p-3 rounded-lg bg-muted/50">
+                    <h5 className="font-medium mb-1">Seed Round</h5>
+                    <p className="text-sm text-muted-foreground">{financialsData.funding_requirements.seed_round}</p>
                   </div>
-                  <CardTitle className="text-2xl">SWOT Analysis</CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="bg-success/10 p-4 rounded-lg border border-success/20">
-                    <h4 className="font-semibold mb-3 text-success flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4" />
-                      Strengths
-                    </h4>
-                    <ul className="space-y-2">
-                      {analysisResult.swot.strengths.map((strength, index) => (
-                        <li key={index} className="text-sm leading-relaxed flex items-start gap-2">
-                          <div className="w-2 h-2 rounded-full bg-success mt-2 flex-shrink-0" />
-                          {strength}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div className="bg-warning/10 p-4 rounded-lg border border-warning/20">
-                    <h4 className="font-semibold mb-3 text-warning flex items-center gap-2">
-                      <AlertTriangle className="h-4 w-4" />
-                      Weaknesses
-                    </h4>
-                    <ul className="space-y-2">
-                      {analysisResult.swot.weaknesses.map((weakness, index) => (
-                        <li key={index} className="text-sm leading-relaxed flex items-start gap-2">
-                          <div className="w-2 h-2 rounded-full bg-warning mt-2 flex-shrink-0" />
-                          {weakness}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div className="bg-primary/10 p-4 rounded-lg border border-primary/20">
-                    <h4 className="font-semibold mb-3 text-primary flex items-center gap-2">
-                      <Zap className="h-4 w-4" />
-                      Opportunities
-                    </h4>
-                    <ul className="space-y-2">
-                      {analysisResult.swot.opportunities.map((opportunity, index) => (
-                        <li key={index} className="text-sm leading-relaxed flex items-start gap-2">
-                          <div className="w-2 h-2 rounded-full bg-primary mt-2 flex-shrink-0" />
-                          {opportunity}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div className="bg-destructive/10 p-4 rounded-lg border border-destructive/20">
-                    <h4 className="font-semibold mb-3 text-destructive flex items-center gap-2">
-                      <AlertTriangle className="h-4 w-4" />
-                      Threats
-                    </h4>
-                    <ul className="space-y-2">
-                      {analysisResult.swot.threats.map((threat, index) => (
-                        <li key={index} className="text-sm leading-relaxed flex items-start gap-2">
-                          <div className="w-2 h-2 rounded-full bg-destructive mt-2 flex-shrink-0" />
-                          {threat}
-                        </li>
-                      ))}
-                    </ul>
+                  <div className="p-3 rounded-lg bg-muted/50">
+                    <h5 className="font-medium mb-1">Potential Sources</h5>
+                    <p className="text-sm text-muted-foreground">{financialsData.funding_requirements.potential_sources}</p>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          </motion.div>
+              </div>
 
-          {/* Financial Projections */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.5 }}
-          >
-            <Card className="shadow-lg h-full border-2 border-primary/20 hover:border-primary/40 transition-colors">
-              <CardHeader className="pb-4">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="p-3 bg-primary/10 rounded-xl">
-                    <DollarSign className="h-6 w-6 text-primary" />
-                  </div>
-                  <CardTitle className="text-2xl">Financial Projections</CardTitle>
+              <div>
+                <h4 className="font-semibold text-lg mb-3 text-primary">Key Metrics</h4>
+                <div className="grid md:grid-cols-2 gap-4">
+                  {Object.entries(financialsData.key_metrics).map(([key, value]) => (
+                    <div key={key} className="p-3 rounded-lg bg-muted/50">
+                      <h5 className="font-medium mb-1 capitalize">{key.replace(/_/g, ' ')}</h5>
+                      <p className="text-sm text-muted-foreground">{value}</p>
+                    </div>
+                  ))}
                 </div>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="bg-primary/5 p-5 rounded-xl border border-primary/20">
-                  <h4 className="font-semibold mb-3 text-primary flex items-center gap-2">
-                    <PieChart className="h-4 w-4" />
-                    Revenue Model
-                  </h4>
-                  <p className="text-sm leading-relaxed">{analysisResult.financials.revenueModel}</p>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-success/10 p-4 rounded-lg border border-success/20 text-center">
-                    <h4 className="font-semibold mb-2 text-success">Startup Costs</h4>
-                    <p className="text-2xl font-bold text-success">{analysisResult.financials.estimatedStartupCost}</p>
-                  </div>
-                  
-                  <div className="bg-accent/10 p-4 rounded-lg border border-accent/20 text-center">
-                    <h4 className="font-semibold mb-2 text-accent">Break-even</h4>
-                    <p className="text-2xl font-bold text-accent">{analysisResult.financials.breakEvenTime}</p>
-                  </div>
-                </div>
-
-                <div className="bg-muted/20 p-5 rounded-xl border border-muted/30">
-                  <h4 className="font-semibold mb-4 flex items-center gap-2">
-                    <BarChart3 className="h-4 w-4 text-primary" />
-                    Key Metrics
-                  </h4>
-                  <div className="space-y-3">
-                    {analysisResult.financials.keyMetrics.map((metric, index) => (
-                      <div key={index} className="flex items-center justify-between p-3 bg-background/50 rounded-lg">
-                        <div>
-                          <span className="font-medium">{metric.metric}</span>
-                          <p className="text-xs text-muted-foreground">{metric.description}</p>
-                        </div>
-                        <span className="text-lg font-bold text-primary">{metric.value}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="bg-warning/10 p-4 rounded-lg border border-warning/20">
-                  <h4 className="font-semibold mb-3 text-warning flex items-center gap-2">
-                    <Info className="h-4 w-4" />
-                    Funding Requirements
-                  </h4>
-                  <p className="text-sm leading-relaxed">{analysisResult.financials.fundingRequirements}</p>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
       </div>
     </div>
   );
