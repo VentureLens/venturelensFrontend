@@ -65,19 +65,18 @@ export interface AnalysisResult {
       }>;
     },
     {
-      feasibilityScores: {
+      scores: {
         competitor_analysis: number;
-        financial_projections: number;
+        business_model: number;
         market_analysis: number;
-        swot_analysis: number;
+        risk_mitigation: number;
       };
       overallScore: number;
       explanation: {
         competitor_analysis: string;
-        financial_projections: string;
+        business_model: string;
         market_analysis: string;
-        swot_analysis: string;
-        overallScore: string;
+        risk_mitigation: string;
       };
     }
   ];
@@ -253,19 +252,18 @@ const mockAnalysisResult: AnalysisResult = {
       ]
     },
     {
-      feasibilityScores: {
+      scores: {
         competitor_analysis: 0.8,
-        financial_projections: 0.7,
+        business_model: 0.7,
         market_analysis: 0.9,
-        swot_analysis: 0.75
+        risk_mitigation: 0.75
       },
       overallScore: 0.79,
       explanation: {
         competitor_analysis: "High score due to detailed competitor information, including features, pricing, marketing, and SWOT. This allows for a thorough understanding of the competitive landscape.",
-        financial_projections: "Moderate score. While cost structure, funding, and key metrics are provided, more detailed financial projections, including revenue forecasts and profitability analysis, would improve the score.",
+        business_model: "Moderate score. While cost structure, funding, and key metrics are provided, more detailed financial projections, including revenue forecasts and profitability analysis, would improve the score.",
         market_analysis: "High score due to clear market size and growth projections, along with identification of key trends. This demonstrates a strong understanding of the market opportunity.",
-        swot_analysis: "Good score due to comprehensive analysis of merits and demerits, including proposed countermeasures. This shows a balanced perspective and proactive approach to risk mitigation.",
-        overallScore: "The overall score is a weighted average of the individual scores, reflecting a generally positive feasibility outlook. Improvement in financial projections would significantly enhance the overall score."
+        risk_mitigation: "Good score due to comprehensive analysis of merits and demerits, including proposed countermeasures. This shows a balanced perspective and proactive approach to risk mitigation."
       }
     }
   ]
@@ -294,10 +292,18 @@ export const analyzeStartup = async (data: StartupData): Promise<AnalysisResult>
   // Simulate API delay
   await new Promise(resolve => setTimeout(resolve, 2000));
   
+  const res=await fetch('http://127.0.0.1:8000/api/getResults',{
+    method: "POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({title:data.title,description:data.description})
+  })
+  const result=await res.json()
+  console.log(result)
+  
   // In a real app, this would call your backend API
   // For now, return mock data with some customization based on input
   return {
-    ...mockAnalysisResult,
+    ...result,
     // You could customize the mock data based on the input here
   };
 };

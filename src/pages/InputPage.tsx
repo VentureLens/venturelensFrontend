@@ -1,26 +1,32 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Loader2, Lightbulb, TrendingUp } from 'lucide-react';
-import { useFeasibilityStore, analyzeStartup } from '@/store/feasibilityStore';
-import { ThemeToggle } from '@/components/ThemeToggle';
-import { useToast } from '@/hooks/use-toast';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Loader2, Lightbulb, TrendingUp } from "lucide-react";
+import { useFeasibilityStore, analyzeStartup } from "@/store/feasibilityStore";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { useToast } from "@/hooks/use-toast";
 
 const InputPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const { setStartupData, setAnalysisResult, isLoading, setIsLoading } = useFeasibilityStore();
-
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const { setStartupData, setAnalysisResult, isLoading, setIsLoading } =
+    useFeasibilityStore();
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!title.trim() || !description.trim()) {
       toast({
         title: "Missing Information",
@@ -30,18 +36,22 @@ const InputPage = () => {
       return;
     }
 
-    const startupData = { title: title.trim(), description: description.trim() };
+    const startupData = {
+      title: title.trim(),
+      description: description.trim(),
+    };
     setStartupData(startupData);
     setIsLoading(true);
 
     try {
       const result = await analyzeStartup(startupData);
       setAnalysisResult(result);
-      navigate('/results');
+      navigate("/results");
     } catch (error) {
       toast({
         title: "Analysis Failed",
-        description: "Something went wrong during the analysis. Please try again.",
+        description:
+          "Something went wrong during the analysis. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -69,20 +79,21 @@ const InputPage = () => {
         className="w-full max-w-2xl relative z-10"
       >
         {/* Header */}
-        <motion.div 
+        <motion.div
           className="text-center mb-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
         >
           <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="p-3 gradient-primary rounded-2xl shadow-glow">
+            {/* <div className="p-3 gradient-primary rounded-2xl shadow-glow">
               <TrendingUp className="h-8 w-8 text-white" />
-            </div>
-            <h1 className="text-gradient">Startup Feasibility Checker</h1>
+            </div> */}
+            <h1 className="text-gradient">VentureLens</h1>
           </div>
           <p className="text-xl text-muted-foreground max-w-lg mx-auto">
-            Enter your startup idea and get an AI-powered feasibility analysis in minutes
+            Enter your startup idea and get an AI-powered feasibility analysis
+            in minutes
           </p>
         </motion.div>
 
@@ -99,11 +110,12 @@ const InputPage = () => {
                 Tell us about your startup idea
               </CardTitle>
               <CardDescription className="text-base">
-                Provide a clear title and detailed description of your startup concept. 
-                Include your target market, key features, and business model.
+                Provide a clear title and detailed description of your startup
+                concept. Include your target market, key features, and business
+                model.
               </CardDescription>
             </CardHeader>
-            
+
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-2">
@@ -133,7 +145,8 @@ const InputPage = () => {
                     disabled={isLoading}
                   />
                   <p className="text-sm text-muted-foreground">
-                    {description.length}/500 characters (minimum 100 recommended)
+                    {description.length}/500 characters (minimum 100
+                    recommended)
                   </p>
                 </div>
 
@@ -145,11 +158,12 @@ const InputPage = () => {
                 >
                   {isLoading ? (
                     <>
-                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                      Analyzing your idea...
+                      {/* <Loader2 className="mr-2 h-5 w-5 animate-spin" /> */}
+                      {/* Analyzing your idea... */}
+                      <div className="loader"></div>
                     </>
                   ) : (
-                    'Analyze My Startup Idea'
+                    "Analyze My Startup Idea"
                   )}
                 </Button>
               </form>
@@ -165,16 +179,28 @@ const InputPage = () => {
           className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-4 text-center"
         >
           <div className="p-4">
-            <div className="text-primary text-2xl font-bold">Market Analysis</div>
-            <div className="text-sm text-muted-foreground">Comprehensive market research and sizing</div>
+            <div className="text-primary text-2xl font-bold">
+              Market Analysis
+            </div>
+            <div className="text-sm text-muted-foreground">
+              Comprehensive market research and sizing
+            </div>
           </div>
           <div className="p-4">
-            <div className="text-accent text-2xl font-bold">Competitor Insights</div>
-            <div className="text-sm text-muted-foreground">Direct and indirect competitor analysis</div>  
+            <div className="text-accent text-2xl font-bold">
+              Competitor Insights
+            </div>
+            <div className="text-sm text-muted-foreground">
+              Direct and indirect competitor analysis
+            </div>
           </div>
           <div className="p-4">
-            <div className="text-primary text-2xl font-bold">Financial Projections</div>
-            <div className="text-sm text-muted-foreground">Revenue models and funding requirements</div>
+            <div className="text-primary text-2xl font-bold">
+              Financial Projections
+            </div>
+            <div className="text-sm text-muted-foreground">
+              Revenue models and funding requirements
+            </div>
           </div>
         </motion.div>
       </motion.div>

@@ -56,16 +56,32 @@ Modern SaaS-inspired palette with professional blues and clean grays.
     --ring: 217 91% 60%;
 
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(280, 100%, 70%), hsl(16, 100%, 66%));
-    --gradient-hero: linear-gradient(135deg, hsl(280, 100%, 70%) 0%, hsl(16, 100%, 66%) 100%);
-    --gradient-card: linear-gradient(145deg, hsl(0, 0%, 100%) 0%, hsl(220, 14%, 98%) 100%);
+    --gradient-primary: linear-gradient(
+      135deg,
+      hsl(280, 100%, 70%),
+      hsl(16, 100%, 66%)
+    );
+    --gradient-hero: linear-gradient(
+      135deg,
+      hsl(280, 100%, 70%) 0%,
+      hsl(16, 100%, 66%) 100%
+    );
+    --gradient-card: linear-gradient(
+      145deg,
+      hsl(0, 0%, 100%) 0%,
+      hsl(220, 14%, 98%) 100%
+    );
 
     /* Shadows */
     --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.05);
-    --shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.1), 0 2px 4px -2px hsl(0 0% 0% / 0.1);
-    --shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.1), 0 4px 6px -4px hsl(0 0% 0% / 0.1);
-    --shadow-xl: 0 20px 25px -5px hsl(0 0% 0% / 0.1), 0 8px 10px -6px hsl(0 0% 0% / 0.1);
-    --shadow-glow: 0 0 0 1px hsl(280 100% 70% / 0.1), 0 10px 30px -10px hsl(280 100% 70% / 0.3);
+    --shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.1),
+      0 2px 4px -2px hsl(0 0% 0% / 0.1);
+    --shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.1),
+      0 4px 6px -4px hsl(0 0% 0% / 0.1);
+    --shadow-xl: 0 20px 25px -5px hsl(0 0% 0% / 0.1),
+      0 8px 10px -6px hsl(0 0% 0% / 0.1);
+    --shadow-glow: 0 0 0 1px hsl(280 100% 70% / 0.1),
+      0 10px 30px -10px hsl(280 100% 70% / 0.3);
 
     /* Border Radius */
     --radius: 0.75rem;
@@ -135,16 +151,32 @@ Modern SaaS-inspired palette with professional blues and clean grays.
     --ring: 280 100% 70%;
 
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(280, 100%, 70%), hsl(16, 100%, 66%));
-    --gradient-hero: linear-gradient(135deg, hsl(280, 100%, 70%) 0%, hsl(16, 100%, 66%) 100%);
-    --gradient-card: linear-gradient(145deg, hsl(224, 71%, 4%) 0%, hsl(217.2, 32.6%, 17.5%) 100%);
+    --gradient-primary: linear-gradient(
+      135deg,
+      hsl(280, 100%, 70%),
+      hsl(16, 100%, 66%)
+    );
+    --gradient-hero: linear-gradient(
+      135deg,
+      hsl(280, 100%, 70%) 0%,
+      hsl(16, 100%, 66%) 100%
+    );
+    --gradient-card: linear-gradient(
+      145deg,
+      hsl(224, 71%, 4%) 0%,
+      hsl(217.2, 32.6%, 17.5%) 100%
+    );
 
     /* Shadows */
     --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.3);
-    --shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.4), 0 2px 4px -2px hsl(0 0% 0% / 0.4);
-    --shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.5), 0 4px 6px -4px hsl(0 0% 0% / 0.5);
-    --shadow-xl: 0 20px 25px -5px hsl(0 0% 0% / 0.6), 0 8px 10px -6px hsl(0 0% 0% / 0.6);
-    --shadow-glow: 0 0 0 1px hsl(280 100% 70% / 0.2), 0 10px 30px -10px hsl(280 100% 70% / 0.4);
+    --shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.4),
+      0 2px 4px -2px hsl(0 0% 0% / 0.4);
+    --shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.5),
+      0 4px 6px -4px hsl(0 0% 0% / 0.5);
+    --shadow-xl: 0 20px 25px -5px hsl(0 0% 0% / 0.6),
+      0 8px 10px -6px hsl(0 0% 0% / 0.6);
+    --shadow-glow: 0 0 0 1px hsl(280 100% 70% / 0.2),
+      0 10px 30px -10px hsl(280 100% 70% / 0.4);
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -248,5 +280,36 @@ Modern SaaS-inspired palette with professional blues and clean grays.
   to {
     opacity: 1;
     transform: scale(1);
+  }
+}
+
+/* HTML: <div class="loader"></div> */
+.loader {
+  width: 40px;
+  height: 40px;
+  position: relative;
+  --c: no-repeat linear-gradient(#25b09b 0 0);
+  background: var(--c) center/100% 10px, var(--c) center/10px 100%;
+}
+.loader:before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--c) 0 0, var(--c) 100% 0, var(--c) 0 100%, var(--c) 100% 100%;
+  background-size: 15.5px 15.5px;
+  animation: l16 1.5s infinite cubic-bezier(0.3, 1, 0, 1);
+}
+@keyframes l16 {
+  33% {
+    inset: -10px;
+    transform: rotate(0deg);
+  }
+  66% {
+    inset: -10px;
+    transform: rotate(90deg);
+  }
+  100% {
+    inset: 0;
+    transform: rotate(90deg);
   }
 }
