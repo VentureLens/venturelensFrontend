@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { Atom } from "react-loading-indicators";
 import {
   Card,
   CardContent,
@@ -12,9 +13,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Loader2, Lightbulb, TrendingUp } from "lucide-react";
+import { Lightbulb } from "lucide-react";
 import { useFeasibilityStore, analyzeStartup } from "@/store/feasibilityStore";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { useToast } from "@/hooks/use-toast";
 
 const InputPage = () => {
@@ -24,6 +24,60 @@ const InputPage = () => {
   const [description, setDescription] = useState("");
   const { setStartupData, setAnalysisResult, isLoading, setIsLoading } =
     useFeasibilityStore();
+
+  const [showPasswordDialog, setShowPasswordDialog] = useState(true);
+  const [enteredPassword, setEnteredPassword] = useState("");
+  const [authError, setAuthError] = useState("");
+
+  const getStoredToken = () => localStorage.getItem("access_token");
+
+  const isTokenExpired = (token: string) => {
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      return payload.exp * 1000 < Date.now();
+    } catch {
+      return true;
+    }
+  };
+
+  const fetchToken = async () => {
+    const res = await fetch("https://venturelens.onrender.com/auth/token", {
+      method: "POST",
+    });
+    const result = await res.json();
+    localStorage.setItem("access_token", result.access_token);
+    return result.access_token;
+  };
+
+  const getValidToken = async () => {
+    let token = getStoredToken();
+    if (!token || isTokenExpired(token)) {
+      token = await fetchToken();
+    }
+    return token;
+  };
+
+  // Fetch token on page load (before API calls)
+  useEffect(() => {
+    getValidToken();
+  }, []);
+
+  const handlePasswordSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const res = await fetch("https://venturelens.onrender.com/password", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password: enteredPassword }),
+    });
+    const result = await res.json();
+    if (result.status) {
+      setShowPasswordDialog(false);
+      setAuthError("");
+    } else {
+      setAuthError("Incorrect password. Please try again.");
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -44,7 +98,9 @@ const InputPage = () => {
     setIsLoading(true);
 
     try {
-      const result = await analyzeStartup(startupData);
+      const token = await getValidToken();
+
+      const result = await analyzeStartup(startupData, token);
       setAnalysisResult(result);
       navigate("/results");
     } catch (error) {
@@ -60,23 +116,49 @@ const InputPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      {/* Theme Toggle */}
-      <div className="fixed top-4 right-4 z-10">
-        <ThemeToggle />
-      </div>
+    <div className="min-h-screen bg-background flex items-center justify-center p-4 relative">
+      {/* 🔒 Password Overlay */}
+      {showPasswordDialog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-black/50">
+          <div className="bg-card p-6 rounded-xl shadow-lg w-full max-w-md text-center">
+            <h2 className="text-2xl font-bold mb-4">Enter Password</h2>
+            <form onSubmit={handlePasswordSubmit} className="space-y-4">
+              <Input
+                type="password"
+                placeholder="Enter password"
+                value={enteredPassword}
+                onChange={(e) => setEnteredPassword(e.target.value)}
+                className="h-12 text-base"
+              />
+              {authError && <p className="text-red-500 text-sm">{authError}</p>}
+              <Button type="submit" className="w-full h-12 text-lg">
+                Unlock
+              </Button>
+            </form>
+          </div>
+        </div>
+      )}
 
-      {/* Background Elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-64 h-64 gradient-primary rounded-full opacity-5 blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 gradient-hero rounded-full opacity-3 blur-3xl" />
-      </div>
+      {/* Loader Overlay */}
+      {isLoading && (
+        <div className="fixed inset-0 z-40 flex items-center justify-center backdrop-blur-md bg-black/40">
+          <div className="flex flex-col items-center gap-4">
+            <Atom color="#f6f1e1" size="large" />
+            <p className="text-lg font-medium text-white">
+              Analyzing your idea...
+            </p>
+          </div>
+        </div>
+      )}
 
+      {/* Page Content */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
-        className="w-full max-w-2xl relative z-10"
+        className={`w-full max-w-2xl relative z-10 ${
+          showPasswordDialog ? "blur-sm pointer-events-none" : ""
+        }`}
       >
         {/* Header */}
         <motion.div
@@ -85,12 +167,7 @@ const InputPage = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
         >
-          <div className="flex items-center justify-center gap-3 mb-4">
-            {/* <div className="p-3 gradient-primary rounded-2xl shadow-glow">
-              <TrendingUp className="h-8 w-8 text-white" />
-            </div> */}
-            <h1 className="text-gradient">VentureLens</h1>
-          </div>
+          <h1 className="text-gradient">VentureLens</h1>
           <p className="text-xl text-muted-foreground max-w-lg mx-auto">
             Enter your startup idea and get an AI-powered feasibility analysis
             in minutes
@@ -119,29 +196,22 @@ const InputPage = () => {
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-2">
-                  <Label htmlFor="title" className="text-sm font-medium">
-                    Startup Title *
-                  </Label>
+                  <Label htmlFor="title">Startup Title *</Label>
                   <Input
                     id="title"
-                    placeholder="e.g., AI-Powered Task Management for Remote Teams"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    className="h-12 text-base border-2 focus:border-primary transition-colors"
+                    placeholder="e.g., AI-Powered Task Management for Remote Teams"
                     disabled={isLoading}
                   />
                 </div>
-
                 <div className="space-y-2">
-                  <Label htmlFor="description" className="text-sm font-medium">
-                    Detailed Description *
-                  </Label>
+                  <Label htmlFor="description">Detailed Description *</Label>
                   <Textarea
                     id="description"
-                    placeholder="Describe your startup idea in detail. Include your target audience, key features, revenue model, and what problem you're solving. Be as specific as possible to get better analysis results."
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    className="min-h-32 text-base border-2 focus:border-primary transition-colors resize-none"
+                    placeholder="Describe your startup idea..."
                     disabled={isLoading}
                   />
                   <p className="text-sm text-muted-foreground">
@@ -149,59 +219,16 @@ const InputPage = () => {
                     recommended)
                   </p>
                 </div>
-
                 <Button
                   type="submit"
-                  size="lg"
                   disabled={isLoading || !title.trim() || !description.trim()}
-                  className="w-full h-14 text-lg font-semibold gradient-primary hover:shadow-glow transition-all duration-300 transform hover:scale-[1.02]"
+                  className="w-full h-14 text-lg font-semibold gradient-primary"
                 >
-                  {isLoading ? (
-                    <>
-                      {/* <Loader2 className="mr-2 h-5 w-5 animate-spin" /> */}
-                      {/* Analyzing your idea... */}
-                      <div className="loader"></div>
-                    </>
-                  ) : (
-                    "Analyze My Startup Idea"
-                  )}
+                  Analyze My Startup Idea
                 </Button>
               </form>
             </CardContent>
           </Card>
-        </motion.div>
-
-        {/* Features */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-4 text-center"
-        >
-          <div className="p-4">
-            <div className="text-primary text-2xl font-bold">
-              Market Analysis
-            </div>
-            <div className="text-sm text-muted-foreground">
-              Comprehensive market research and sizing
-            </div>
-          </div>
-          <div className="p-4">
-            <div className="text-accent text-2xl font-bold">
-              Competitor Insights
-            </div>
-            <div className="text-sm text-muted-foreground">
-              Direct and indirect competitor analysis
-            </div>
-          </div>
-          <div className="p-4">
-            <div className="text-primary text-2xl font-bold">
-              Financial Projections
-            </div>
-            <div className="text-sm text-muted-foreground">
-              Revenue models and funding requirements
-            </div>
-          </div>
         </motion.div>
       </motion.div>
     </div>

@@ -126,9 +126,9 @@ const ResultsPage = () => {
                     : "Low Feasibility"}
                 </Badge>
               </div>
-              {/* <p className="text-muted-foreground mb-4">
+              <p className="text-muted-foreground mb-4">
                 {verdictData.explanation.overallScore}
-              </p> */}
+              </p>
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {Object.entries(verdictData.scores).map(([key, score]) => (

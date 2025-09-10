@@ -77,6 +77,7 @@ export interface AnalysisResult {
         business_model: string;
         market_analysis: string;
         risk_mitigation: string;
+        overallScore:string;
       };
     }
   ];
@@ -263,7 +264,8 @@ const mockAnalysisResult: AnalysisResult = {
         competitor_analysis: "High score due to detailed competitor information, including features, pricing, marketing, and SWOT. This allows for a thorough understanding of the competitive landscape.",
         business_model: "Moderate score. While cost structure, funding, and key metrics are provided, more detailed financial projections, including revenue forecasts and profitability analysis, would improve the score.",
         market_analysis: "High score due to clear market size and growth projections, along with identification of key trends. This demonstrates a strong understanding of the market opportunity.",
-        risk_mitigation: "Good score due to comprehensive analysis of merits and demerits, including proposed countermeasures. This shows a balanced perspective and proactive approach to risk mitigation."
+        risk_mitigation: "Good score due to comprehensive analysis of merits and demerits, including proposed countermeasures. This shows a balanced perspective and proactive approach to risk mitigation.",
+        overallScore:"Still thinking..."
       }
     }
   ]
@@ -288,14 +290,17 @@ export const useFeasibilityStore = create<FeasibilityState>((set) => ({
 }));
 
 // Helper function to simulate API call
-export const analyzeStartup = async (data: StartupData): Promise<AnalysisResult> => {
+export const analyzeStartup = async (data: StartupData,token:string): Promise<AnalysisResult> => {
   // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 2000));
-  
-  const res=await fetch('http://127.0.0.1:8000/api/getResults',{
+  // await new Promise(resolve => setTimeout(resolve, 2000));
+
+  const res=await fetch('https://venturelens.onrender.com/api/getResults',{
     method: "POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({title:data.title,description:data.description})
+    headers:{
+      "Content-Type":"application/json",
+      Authorization:`Bearer ${token}`
+    },
+    body:JSON.stringify({title:data.title,description:data.description,apiKey:"XroTNXZEy8qiBT1GNsPxmX3ceHMS4PiL"})
   })
   const result=await res.json()
   console.log(result)
